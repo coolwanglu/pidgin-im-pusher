@@ -1,0 +1,10 @@
+#how to configure the plugin
+
+==Configure the plugin==
+
+  * Register an account at [http://notifo.com notifo] or [http://pushme.to pushme.to] if you don't have an account
+  * Enable the plugin in pidgin and press 'configure' button in the plugins dialog
+  * Tick the statuses at which you want pidgin to push messages
+  * Enable the service you like (or both), and provide the information in the text input boxes.
+  * Do not forget to install the Apps of notifo or pushme.to in your iOS device, follow the guide in the App to configure it.
+  * Now you may test if the plugin is working, set your status and ask one of your friend to send you a message (or do it yourself). You should receive the push notification on your device.
