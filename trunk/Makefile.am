@@ -12,4 +12,4 @@ install: impusher.so
 	cp impusher.so ~/.purple/plugins
 
 clean:
-	rm -rf *.o *.la
+	rm -rf *.o *.la *.lo

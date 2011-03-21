@@ -500,7 +500,7 @@ install: impusher.so
 	cp impusher.so ~/.purple/plugins
 
 clean:
-	rm -rf *.o *.la
+	rm -rf *.o *.la *.lo
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
