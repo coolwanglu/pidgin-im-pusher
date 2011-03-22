@@ -1,7 +1,7 @@
 #how to build and install
 
 ==If you have the source files of Pidgin==
-  * download and throw the file 'impusher.c' into the directory 'pidgin/plugins' in the pidgin source tree
+  * download and throw the file [http://pidgin-im-pusher.googlecode.com/svn/trunk/impusher.c 'impusher.c'] into the directory 'pidgin/plugins' in the pidgin source tree
   * run 'make impusher.so'
   * copy impusher.so to '~/.purple/plugins'
 
