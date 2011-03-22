@@ -14,7 +14,7 @@ Notes:
 
   1. Usually an official App supports its own protocol only
 
-  2. Depends on the service provider, for example, the official gTalk service is through web, so push is not supported; but there is an official Live Messenger App which says to support push (but it never works for me)
+  2. Depends on the service provider, for example, the official gTalk service is through web, so push is not supported; but the official Live Messenger App supports push.
 
   3. When the original service provider does not support Push, a third-party server (for example IM+, eBuddy and BeeJiveIM) needs your password to log into the IM services, receive messages and push them to you. Some Apps claim that your password will be store locally only, but it will be sent to the servers each time you use the App
 
