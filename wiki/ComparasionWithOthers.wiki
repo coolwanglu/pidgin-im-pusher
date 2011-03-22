@@ -4,10 +4,10 @@
 = Which service should you choose =
 
 || || pidgin-im-pusher || Official Apps || Third-party Apps ||
-|| Multiple Protocol || Yes || Usually No [1] || Usually Yes ||
-|| Push || Yes || Maybe [2] || Usually Yes ||
-|| Provide password to third parties || No || No || Yes for those support Push [3] ||
-|| Reply messages || No [4] || Yes || Yes ||
+|| Multiple Protocol || Yes || Usually No `[1]` || Usually Yes ||
+|| Push || Yes || Maybe `[2]` || Usually Yes ||
+|| Provide password to third parties || No || No || Yes for those support Push `[3]` ||
+|| Reply messages || No `[4]` || Yes || Yes ||
 
 
 Notes:
