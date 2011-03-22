@@ -6,7 +6,7 @@
   * copy impusher.so to '~/.purple/plugins'
 
 ==Otherwise==
-  * make sure pidgin and headers files are installed, the latter one is usually named 'pidgin-dev' in Linux distributions
+  * make sure pidgin and header files are installed, the latter one is usually named 'pidgin-dev' in Linux distributions
   * checkout the source code 
   * run './configure && make && make install'
   * *root/sudo is NOT required when installation*
