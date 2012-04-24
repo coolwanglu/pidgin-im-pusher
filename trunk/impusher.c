@@ -1,8 +1,9 @@
 /*
 IM Pusher for Pidgin
 
-Push messages to iOS devices
+Push messages to mobile devices
 
+Copyright (C) 2012 Matt Conte <jesteree.dev@soodonims.com>
 Copyright (C) 2011 WANG Lu <coolwanglu@gmail.com>
 Copyright (C) 2010 Flavio Tischhauser <ftischhauser@gmail.com>
  
@@ -23,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #define PURPLE_PLUGINS
-#define VERSION "0.0.7"
+#define VERSION "0.0.8"
 
 #include <glib.h>
 #include <string.h>
@@ -44,9 +45,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define PLUGIN_ID "pidgin-im-pusher"
 #define PLUGIN_NAME "IM Pusher"
-#define PLUGIN_SUMMARY "Pushes IMs to your iOS devices."
-#define PLUGIN_DESCRIPTION "Pushes IMs to your iOS devices, through notifo and/or pushme.to services."
-#define PLUGIN_AUTHORS "Flavio Tischhauser  <ftischhauser@gmail.com>\nWANG Lu  <coolwanglu@gmail.com>"
+#define PLUGIN_SUMMARY "Pushes IMs to your mobile devices."
+#define PLUGIN_DESCRIPTION "Pushes IMs to your mobile devices. Supported servcies: NMA, Notifo, pushme.to."
+#define PLUGIN_AUTHORS "Flavio Tischhauser  <ftischhauser@gmail.com>\nWANG Lu  <coolwanglu@gmail.com>\nMatt Conte  <jesteree.dev@soodonims.com>"
 #define PLUGIN_URL "http://code.google.com/p/pidgin-im-pusher/"
 
 #define HTTP_USER_AGENT "Pidgin IM Pusher"
@@ -55,9 +56,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define PREF_STATUS_PREFIX PREF_PREFIX"/status"
 
-#define PREF_PUSH_PREFIX PREF_PREFIX"/push"
+#define PREF_NMA_PREFIX PREF_PUSH_PREFIX"/nma"
 
 #define PREF_NOTIFO_PREFIX PREF_PUSH_PREFIX"/notifo"
+
+#define PREF_PUSH_PREFIX PREF_PREFIX"/push"
+
+#define PREF_NMA_ENABLED PREF_NMA_PREFIX"/enabled"
+#define PREF_NMA_APIKEY PREF_NMA_PREFIX"/apikey"
 
 #define PREF_NOTIFO_ENABLED PREF_NOTIFO_PREFIX"/enabled"
 #define PREF_NOTIFO_USERNAME PREF_NOTIFO_PREFIX"/username"
@@ -81,12 +87,48 @@ void received_CM (PurpleAccount *, char *, char *, PurpleConversation *, PurpleM
 static gboolean plugin_unload(PurplePlugin *);
 static gboolean plugin_load(PurplePlugin *);
 static void init_plugin(PurplePlugin *);
+void nma(const gchar *, const gchar *);
+static void nma_send_cb (PurpleUtilFetchUrlData *, gpointer, const gchar *, gsize, const gchar *);
 void notifo(const gchar *, const gchar *);
 static void notifo_send_cb (PurpleUtilFetchUrlData *, gpointer, const gchar *, gsize, const gchar *);
 void pushme_to(const gchar *, const gchar *);
 static void pushme_to_send_cb (PurpleUtilFetchUrlData *, gpointer, const gchar *, gsize, const gchar *);
 void main_CB(PurpleAccount *, char *, char *);
 
+void nma(const gchar *sender, const gchar *message)
+{
+    if(!purple_prefs_get_bool(PREF_NMA_ENABLED))
+        return;
+
+	const char *apikey = purple_prefs_get_string(PREF_NMA_APIKEY);
+
+	gchar *encapikey = g_strdup(purple_url_encode(apikey));
+	gchar *encapp = g_strdup(purple_url_encode("Pidgin"));
+	gchar *encsender = g_strdup(purple_url_encode(sender));
+	gchar *encmsg = g_strdup(purple_url_encode(message));
+	gchar *priority = g_strdup_printf("0");
+	gchar *senddata = g_strdup_printf("apikey=%s&application=%s&event=%s&description=%s&priority=%s", encapikey, encapp, encsender, encmsg, priority);
+
+	gchar *request = g_strdup_printf (
+		"POST https://www.notifymyandroid.com/publicapi/notify HTTP/1.1\r\n"
+		"User-Agent: "HTTP_USER_AGENT"\r\n"
+		"Host: www.notifymyandroid.com\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"
+		"Content-Length: %d\r\n\r\n%s",
+		strlen(senddata),
+		senddata
+		);
+
+	g_free(encapikey);
+	g_free(encapp);
+	g_free(encsender);
+	g_free(encmsg);
+	g_free(priority);
+	g_free(senddata);
+
+	purple_util_fetch_url_request("https://www.notifymyandroid.com/publicapi/notify", TRUE, HTTP_USER_AGENT, TRUE, request, FALSE, nma_send_cb, NULL);
+	g_free(request);
+}
 
 void notifo(const gchar *sender, const gchar *message)
 {
@@ -153,6 +195,11 @@ void pushme_to(const gchar *sender, const gchar *message)
 	g_free(request);
 }
 
+static void nma_send_cb (PurpleUtilFetchUrlData *url_data, gpointer user_data, const gchar *url_text, gsize len, const gchar *error_message)
+{
+	//We don't really have anything to do in this callback function yet :)
+}
+
 static void notifo_send_cb (PurpleUtilFetchUrlData *url_data, gpointer user_data, const gchar *url_text, gsize len, const gchar *error_message)
 {
 	//We don't really have anything to do in this callback function yet :)
@@ -191,6 +238,7 @@ void main_CB(PurpleAccount *account, char *sender, char *message)
         buddy = purple_find_buddy(account, sender);
         const char *sender_name = (buddy != NULL) ? (purple_buddy_get_contact_alias(buddy)) : sender;
 
+        nma(sender_name, purple_markup_strip_html(message));
         notifo(sender_name, purple_markup_strip_html(message));
         pushme_to(sender_name, purple_markup_strip_html(message));
     }
@@ -212,6 +260,10 @@ static void init_plugin(PurplePlugin *plugin)
 
 	purple_prefs_add_none(PREF_PUSH_PREFIX);
 
+	purple_prefs_add_none(PREF_NMA_PREFIX);
+    purple_prefs_add_bool(PREF_NMA_ENABLED, FALSE);
+	purple_prefs_add_string(PREF_NMA_APIKEY, "");
+	
 	purple_prefs_add_none(PREF_NOTIFO_PREFIX);
     purple_prefs_add_bool(PREF_NOTIFO_ENABLED, FALSE);
 	purple_prefs_add_string(PREF_NOTIFO_USERNAME, "");
@@ -261,6 +313,11 @@ static GtkWidget *plugin_config_frame(PurplePlugin *plugin)
     vbox = gtk_vbox_new(FALSE, 13);
     gtk_box_pack_start(mainframe, vbox, FALSE, FALSE, 13);
 
+	frame = pidgin_make_frame(vbox, "NMA");
+    pidgin_prefs_checkbox("Enabled", PREF_NMA_ENABLED, frame);
+	sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+	pidgin_prefs_labeled_entry(frame,"API key:", PREF_NMA_APIKEY,sg);
+	
     frame = pidgin_make_frame(vbox, "Notifo");
     pidgin_prefs_checkbox("Enabled", PREF_NOTIFO_ENABLED, frame);
 	sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
