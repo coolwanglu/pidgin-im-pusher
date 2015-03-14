@@ -9,4 +9,4 @@ However it is not an alternative of services like eBuddy and IM+, as you cannot 
 
 Check the wiki pages for the usage.
 
-![http://pidgin-im-pusher.googlecode.com/svn/wiki/Screenshot.png](http://pidgin-im-pusher.googlecode.com/svn/wiki/Screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/coolwanglu/pidgin-im-pusher/wiki/Screenshot.png)
