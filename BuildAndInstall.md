@@ -1,0 +1,12 @@
+#how to build and install
+
+## If you have the source files of Pidgin ##
+  * download and throw the file ['impusher.c'](http://pidgin-im-pusher.googlecode.com/svn/trunk/impusher.c) into the directory 'pidgin/plugins' in the pidgin source tree
+  * run 'make impusher.so'
+  * copy impusher.so to '~/.purple/plugins'
+
+## Otherwise ##
+  * make sure pidgin and header files are installed, the latter one is usually named 'pidgin-dev' in Linux distributions
+  * checkout the source code
+  * run './configure && make && make install'
+  * **root/sudo is NOT required when installation**
